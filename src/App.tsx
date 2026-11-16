@@ -1198,10 +1198,10 @@ export default function App() {
         )}
       </main>
 
-      {/* Pantalla completa de reproducción idéntica a Spotify Mobile (Solo móvil) */}
-      {typeof window !== "undefined" && window.innerWidth <= 768 && expanded && current && (
+      {/* Pantalla completa de reproducción estilo Spotify (Desktop & Móvil) */}
+      {expanded && current && (
         <section
-          className="now-playing-screen mobile-only"
+          className="now-playing-screen"
           style={{
             ["--bg-top" as any]: bgTop,
             ["--bg-bottom" as any]: bgBottom,
@@ -1443,10 +1443,21 @@ export default function App() {
 
       {/* Barra de reproducción inferior Desktop estilo Spotify */}
       <footer className="bar desktop-bar">
-        <div className="now">
+        <div
+          className={"now" + (current ? " clickable" : "")}
+          onClick={() => current && setExpanded(!expanded)}
+          title={current ? (expanded ? "Minimizar reproductor" : "Abrir reproductor") : undefined}
+          role={current ? "button" : undefined}
+          tabIndex={current ? 0 : undefined}
+        >
           {current ? (
             <>
-              <img src={current.thumb} alt="" referrerPolicy="no-referrer" />
+              <div className="now-cover-wrap">
+                <img src={current.thumb} alt="" referrerPolicy="no-referrer" />
+                <div className="cover-expand-overlay" title={expanded ? "Minimizar" : "Pantalla completa"}>
+                  {expanded ? <SvgCompress /> : <SvgExpand />}
+                </div>
+              </div>
               <div className="meta">
                 <b>{current.title}</b>
                 <small>{current.channel}</small>
@@ -1534,6 +1545,15 @@ export default function App() {
             onChange={(e) => setVol(+e.target.value)}
             aria-label="Volumen"
           />
+          <button
+            className="ctrl-btn"
+            onClick={() => setExpanded(!expanded)}
+            disabled={!current}
+            title={expanded ? "Minimizar" : "Pantalla completa"}
+            aria-label="Pantalla completa"
+          >
+            {expanded ? <SvgCompress /> : <SvgExpand />}
+          </button>
         </div>
       </footer>
 
