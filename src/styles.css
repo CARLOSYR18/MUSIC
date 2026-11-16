@@ -1406,16 +1406,319 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
     color: #fff !important;
   }
 
-  /* Pantalla de Reproducción Completa en Móvil */
+  /* ==========================================================================
+     REPRODUCTOR SPOTIFY FULLSCREEN (MOBILE & DESKTOP)
+     ========================================================================== */
   .now-playing-screen {
+    position: fixed !important;
     inset: 0 !important;
     z-index: 600 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    background: linear-gradient(180deg, var(--bg-top, #14234b) 0%, var(--bg-bottom, #0a0e1c) 100%) !important;
+    animation: slideUpPlayer 0.25s cubic-bezier(0.1, 0.9, 0.2, 1) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: env(safe-area-inset-bottom, 24px) !important;
   }
-  .now-playing-top {
-    padding: 16px 20px 0 !important;
+  @keyframes slideUpPlayer {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
   }
-  .now-playing-artwork {
-    width: min(300px, 42vh, 85vw) !important;
-    border-radius: 10px !important;
+
+  .player-top-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 16px 20px 8px !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+  }
+  .player-icon-btn {
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px !important;
+    border-radius: 50% !important;
+    transition: opacity 0.15s !important;
+  }
+  .player-icon-btn:hover {
+    opacity: 0.8 !important;
+  }
+  .player-context {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    min-width: 0 !important;
+  }
+  .player-context small {
+    font-size: 10px !important;
+    letter-spacing: 0.08em !important;
+    font-weight: 700 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+  .player-context b {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 220px !important;
+  }
+
+  .player-scroll-content {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 10px 24px 30px !important;
+    max-width: 440px !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+  }
+
+  .player-artwork-box {
+    width: 100% !important;
+    aspect-ratio: 1 !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55) !important;
+    margin-bottom: 20px !important;
+    background: #181818 !important;
+  }
+  .player-artwork-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+
+  .player-switch-video {
+    margin-bottom: 16px !important;
+  }
+  .switch-video-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 999px !important;
+    padding: 6px 14px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #fff !important;
+    transition: background 0.15s, border-color 0.15s !important;
+  }
+  .switch-video-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+  }
+
+  .player-track-meta {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    margin-bottom: 18px !important;
+  }
+  .meta-left {
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+  .player-track-title {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    margin: 0 0 4px !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    letter-spacing: -0.02em !important;
+  }
+  .player-track-sub {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 15px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .player-like-btn {
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px !important;
+    flex-shrink: 0 !important;
+    transition: transform 0.15s !important;
+  }
+  .player-like-btn:hover {
+    transform: scale(1.1) !important;
+  }
+  .player-like-btn.on {
+    color: #1ed760 !important;
+  }
+
+  /* Slider y Tiempos */
+  .player-seek-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    margin-bottom: 18px !important;
+  }
+  .player-slider {
+    height: 4px !important;
+    border-radius: 2px !important;
+  }
+  .player-slider::-webkit-slider-thumb {
+    opacity: 1 !important;
+    width: 12px !important;
+    height: 12px !important;
+  }
+  .player-times {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+    font-variant-numeric: tabular-nums !important;
+    font-weight: 500 !important;
+  }
+
+  /* Controles de reproducción principales */
+  .player-controls-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 24px !important;
+  }
+  .player-ctrl-sub {
+    color: rgba(255, 255, 255, 0.7) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px !important;
+    transition: color 0.15s, transform 0.15s !important;
+  }
+  .player-ctrl-sub:hover {
+    color: #fff !important;
+    transform: scale(1.1) !important;
+  }
+  .player-ctrl-sub.on {
+    color: #1ed760 !important;
+  }
+  .player-ctrl-skip {
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px !important;
+    transition: transform 0.15s !important;
+  }
+  .player-ctrl-skip:hover {
+    transform: scale(1.1) !important;
+  }
+  .player-ctrl-skip svg {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  /* Botón Play/Pause Gigante Blanco de Spotify (64px) */
+  .player-play-large {
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+    transition: transform 0.15s, background 0.15s !important;
+  }
+  .player-play-large:hover {
+    transform: scale(1.06) !important;
+    background: #f0f0f0 !important;
+  }
+  .player-play-large svg {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  /* Barra de utilidades inferiores */
+  .player-utility-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 28px !important;
+  }
+  .player-util-btn {
+    color: rgba(255, 255, 255, 0.7) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px !important;
+    transition: color 0.15s !important;
+  }
+  .player-util-btn:hover {
+    color: #fff !important;
+  }
+  .player-util-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }
+
+  /* Tarjeta de Letra de Spotify */
+  .player-lyrics-card {
+    background: #4956ec !important;
+    border-radius: 12px !important;
+    padding: 16px 18px 20px !important;
+    color: #fff !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4) !important;
+  }
+  .lyrics-card-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 12px !important;
+  }
+  .lyrics-card-header b {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+  }
+  .lyrics-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .lyrics-icon-btn {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    background: rgba(0, 0, 0, 0.25) !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: background 0.15s !important;
+  }
+  .lyrics-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.4) !important;
+  }
+  .lyrics-preview-text {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    color: #fff !important;
   }
 }

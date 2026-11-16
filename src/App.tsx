@@ -158,8 +158,29 @@ const SvgDevice = () => (
   </svg>
 );
 const SvgCheckCircle = () => (
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="#1ed760">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="#1ed760">
     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+  </svg>
+);
+const SvgChevronDown = () => (
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+    <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+  </svg>
+);
+const SvgPlusCircle = () => (
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M12 8v8m-4-4h8"/>
+  </svg>
+);
+const SvgShare = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8m-4-6l-4-4-4 4m4-4v13"/>
+  </svg>
+);
+const SvgQueue = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+    <path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h12v2H3v-2zm14-1v6l5-3-5-3z"/>
   </svg>
 );
 
@@ -1024,7 +1045,7 @@ export default function App() {
         )}
       </main>
 
-      {/* Pantalla completa de reproducción idéntica a Spotify */}
+      {/* Pantalla completa de reproducción idéntica a Spotify Mobile */}
       {expanded && current && (
         <section
           className="now-playing-screen"
@@ -1033,23 +1054,139 @@ export default function App() {
             ["--bg-bottom" as any]: bgBottom,
           }}
         >
-          <div className="now-playing-top">
-            <div className="context-title">{current.title}</div>
-            <div className="top-actions">
-              <button className="top-action-btn" title="Disco"><SvgDisc /></button>
-              <button className="top-action-btn" title="Video"><SvgVideo /></button>
-              <button className="top-action-btn" title="Artista"><SvgUser /></button>
-              <button className="top-action-btn" title="Letra"><SvgMic /></button>
-              <button className="top-action-btn" title="Más opciones"><SvgMore /></button>
-              <button className="minimize-btn" onClick={() => setExpanded(false)} title="Minimizar">
-                <SvgCompress />
-              </button>
+          {/* Barra superior del reproductor móvil */}
+          <div className="player-top-bar">
+            <button
+              className="player-icon-btn"
+              onClick={() => setExpanded(false)}
+              aria-label="Minimizar"
+              title="Minimizar"
+            >
+              <SvgChevronDown />
+            </button>
+            <div className="player-context">
+              <small>REPRODUCIENDO DESDE ARTISTA</small>
+              <b>{current.channel || "Música"}</b>
             </div>
+            <button className="player-icon-btn" aria-label="Opciones" title="Opciones">
+              <SvgMore />
+            </button>
           </div>
 
-          <div className="now-playing-center">
-            <div className="now-playing-artwork">
+          <div className="player-scroll-content">
+            {/* Portada grande con bordes redondeados y sombra */}
+            <div className="player-artwork-box">
               <img src={current.thumb} alt={current.title} referrerPolicy="no-referrer" />
+            </div>
+
+            {/* Botón Cambiar a video */}
+            <div className="player-switch-video">
+              <button
+                className="switch-video-btn"
+                onClick={() => alert("Modo video activado.")}
+              >
+                <SvgVideo />
+                <span>Cambiar a video</span>
+              </button>
+            </div>
+
+            {/* Metadatos: Título grande, Artista con badge [E] y botón (+) */}
+            <div className="player-track-meta">
+              <div className="meta-left">
+                <h2 className="player-track-title">{current.title}</h2>
+                <div className="player-track-sub">
+                  <span className="explicit-badge">E</span>
+                  <span>{current.channel}</span>
+                </div>
+              </div>
+              <button
+                className={"player-like-btn" + (isLiked(current.id) ? " on" : "")}
+                onClick={() => toggleLike(current)}
+                aria-label={isLiked(current.id) ? "Guardado en biblioteca" : "Añadir a biblioteca"}
+              >
+                {isLiked(current.id) ? <SvgCheckCircle /> : <SvgPlusCircle />}
+              </button>
+            </div>
+
+            {/* Barra de progreso con slider y tiempos actuales */}
+            <div className="player-seek-container">
+              <input
+                type="range"
+                className="spotify-slider player-slider"
+                min={0}
+                max={dur || 1}
+                step={1}
+                value={pos}
+                style={{
+                  background: `linear-gradient(to right, #ffffff 0%, #ffffff ${progressPct}%, #4d4d4d ${progressPct}%, #4d4d4d 100%)`,
+                }}
+                aria-label="Progreso"
+                onMouseDown={() => (seeking.current = true)}
+                onTouchStart={() => (seeking.current = true)}
+                onChange={(e) => setPos(+e.target.value)}
+                onMouseUp={(e) => { player.current?.seekTo(+(e.target as HTMLInputElement).value, true); seeking.current = false; }}
+                onTouchEnd={(e) => { player.current?.seekTo(+(e.target as HTMLInputElement).value, true); seeking.current = false; }}
+              />
+              <div className="player-times">
+                <span>{fmt(pos)}</span>
+                <span>{fmt(dur)}</span>
+              </div>
+            </div>
+
+            {/* Controles de reproducción con botón Play gigante blanco */}
+            <div className="player-controls-row">
+              <button
+                className={"player-ctrl-sub" + (shuffle ? " on" : "")}
+                onClick={() => setShuffle(!shuffle)}
+                aria-label="Aleatorio"
+              >
+                <SvgShuffle />
+              </button>
+              <button className="player-ctrl-skip" onClick={prev} aria-label="Anterior">
+                <SvgPrev />
+              </button>
+              <button className="player-play-large" onClick={toggle} aria-label={playing ? "Pausar" : "Reproducir"}>
+                {playing ? <SvgPause /> : <SvgPlay />}
+              </button>
+              <button className="player-ctrl-skip" onClick={next} aria-label="Siguiente">
+                <SvgNext />
+              </button>
+              <button
+                className={"player-ctrl-sub" + (repeat ? " on" : "")}
+                onClick={() => setRepeat(!repeat)}
+                aria-label="Repetir"
+              >
+                <SvgRepeat />
+              </button>
+            </div>
+
+            {/* Utilidades inferiores: Dispositivos, Compartir, Cola */}
+            <div className="player-utility-row">
+              <button className="player-util-btn" title="Dispositivos">
+                <SvgDevice />
+              </button>
+              <div className="player-util-right">
+                <button className="player-util-btn" title="Compartir">
+                  <SvgShare />
+                </button>
+                <button className="player-util-btn" title="Cola de reproducción">
+                  <SvgQueue />
+                </button>
+              </div>
+            </div>
+
+            {/* Tarjeta de previsualización de Letra en la parte inferior */}
+            <div className="player-lyrics-card">
+              <div className="lyrics-card-header">
+                <b>Letra</b>
+                <div className="lyrics-actions">
+                  <button className="lyrics-icon-btn" title="Compartir letra"><SvgShare /></button>
+                  <button className="lyrics-icon-btn" title="Expandir letra"><SvgExpand /></button>
+                </div>
+              </div>
+              <p className="lyrics-preview-text">
+                Disfruta de la mejor calidad de audio sin anuncios ni pausas.
+              </p>
             </div>
           </div>
         </section>
