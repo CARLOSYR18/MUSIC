@@ -274,6 +274,9 @@ export default function App() {
   const seeking = useRef(false);
   const player = useRef<any>(null);
   const nextRef = useRef<() => void>(() => {});
+  const prevRef = useRef<() => void>(() => {});
+  const userPausedRef = useRef(false);
+  const silentAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const current = queue[idx];
   const currentRef = useRef(current);
@@ -326,6 +329,86 @@ export default function App() {
   };
   const prev = () => { if (pos > 4 || idx === 0) player.current?.seekTo(0, true); else setIdx(idx - 1); };
   nextRef.current = next;
+  prevRef.current = prev;
+
+  // Audio Keeper en segundo plano (Móvil / PWA)
+  useEffect(() => {
+    // 1 segundo de silencio WAV en base64 para mantener activo el canal de audio del navegador móvil
+    const silentWav = "data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA";
+    const audio = new Audio(silentWav);
+    audio.loop = true;
+    audio.volume = 0.001;
+    silentAudioRef.current = audio;
+
+    return () => {
+      audio.pause();
+      silentAudioRef.current = null;
+    };
+  }, []);
+
+  // Sincronizar MediaSession API para controles en pantalla de bloqueo y barra de notificaciones
+  useEffect(() => {
+    if (typeof window === "undefined" || !("mediaSession" in navigator)) return;
+
+    if (current) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: current.title,
+          artist: current.channel,
+          album: "Spotify Web",
+          artwork: [
+            { src: current.thumb, sizes: "96x96", type: "image/jpeg" },
+            { src: current.thumb, sizes: "128x128", type: "image/jpeg" },
+            { src: current.thumb, sizes: "192x192", type: "image/jpeg" },
+            { src: current.thumb, sizes: "256x256", type: "image/jpeg" },
+            { src: current.thumb, sizes: "384x384", type: "image/jpeg" },
+            { src: current.thumb, sizes: "512x512", type: "image/jpeg" },
+          ],
+        });
+      } catch {}
+    }
+
+    try {
+      navigator.mediaSession.playbackState = playing ? "playing" : "paused";
+      navigator.mediaSession.setActionHandler("play", () => {
+        userPausedRef.current = false;
+        silentAudioRef.current?.play().catch(() => {});
+        player.current?.playVideo?.();
+      });
+      navigator.mediaSession.setActionHandler("pause", () => {
+        userPausedRef.current = true;
+        silentAudioRef.current?.pause();
+        player.current?.pauseVideo?.();
+      });
+      navigator.mediaSession.setActionHandler("previoustrack", () => {
+        prevRef.current();
+      });
+      navigator.mediaSession.setActionHandler("nexttrack", () => {
+        nextRef.current();
+      });
+      navigator.mediaSession.setActionHandler("seekto", (details) => {
+        if (details.seekTime != null && player.current?.seekTo) {
+          player.current.seekTo(details.seekTime, true);
+          setPos(details.seekTime);
+        }
+      });
+    } catch (e) {
+      console.warn("MediaSession handler error:", e);
+    }
+  }, [current?.id, current?.title, current?.channel, current?.thumb, playing]);
+
+  // Listener para mantener la reproducción cuando se cambia de pestaña o se minimiza en móvil
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        if (!userPausedRef.current && player.current?.getPlayerState?.() === 2) {
+          player.current?.playVideo?.();
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
 
   // Extracción del color del álbum para crear el degradado de Spotify
   useEffect(() => {
@@ -402,8 +485,22 @@ export default function App() {
             }
           },
           onStateChange: (e: any) => {
-            setPlaying(e.data === 1);
+            const isPlay = e.data === 1;
+            setPlaying(isPlay);
+            if (isPlay) {
+              userPausedRef.current = false;
+              silentAudioRef.current?.play().catch(() => {});
+            }
             if (e.data === 0) nextRef.current();
+
+            // Si el navegador móvil pausó automáticamente el audio al cambiar de app o bloquear pantalla:
+            if (e.data === 2 && document.visibilityState === "hidden" && !userPausedRef.current) {
+              setTimeout(() => {
+                if (!userPausedRef.current && player.current?.playVideo) {
+                  player.current.playVideo();
+                }
+              }, 300);
+            }
           },
           onError: (e: any) => {
             console.warn("YouTube Player error:", e.data);
@@ -540,6 +637,8 @@ export default function App() {
       const t = list[i];
       setQueue(list);
       setIdx(i);
+      userPausedRef.current = false;
+      silentAudioRef.current?.play().catch(() => {});
 
       // En PC / Desktop NO expandir a pantalla completa automáticamente:
       // la música suena directamente en la barra inferior de Spotify mientras se navega.
@@ -597,7 +696,17 @@ export default function App() {
     }
   };
 
-  const toggle = () => (playing ? player.current?.pauseVideo() : player.current?.playVideo());
+  const toggle = () => {
+    if (playing) {
+      userPausedRef.current = true;
+      silentAudioRef.current?.pause();
+      player.current?.pauseVideo();
+    } else {
+      userPausedRef.current = false;
+      silentAudioRef.current?.play().catch(() => {});
+      player.current?.playVideo();
+    }
+  };
   const toggleLike = (t: Track) =>
     setLiked((l) => (l.some((x) => x.id === t.id) ? l.filter((x) => x.id !== t.id) : [t, ...l]));
 
