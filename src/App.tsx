@@ -276,6 +276,8 @@ export default function App() {
   const nextRef = useRef<() => void>(() => {});
 
   const current = queue[idx];
+  const currentRef = useRef(current);
+  currentRef.current = current;
   const isLiked = (id: string) => liked.some((t) => t.id === id);
 
   const fallbackListenNow: Track[] = [
@@ -381,11 +383,32 @@ export default function App() {
   useEffect(() => {
     const init = () => {
       player.current = new window.YT.Player("yt", {
-        width: "100%", height: "100%",
-        playerVars: { playsinline: 1, controls: 0, rel: 0, modestbranding: 1 },
+        width: "100%",
+        height: "100%",
+        playerVars: {
+          playsinline: 1,
+          controls: 0,
+          rel: 0,
+          modestbranding: 1,
+          enablejsapi: 1,
+          autoplay: 1,
+          origin: typeof window !== "undefined" ? window.location.origin : undefined,
+        },
         events: {
-          onReady: () => setReady(true),
-          onStateChange: (e: any) => { setPlaying(e.data === 1); if (e.data === 0) nextRef.current(); },
+          onReady: () => {
+            setReady(true);
+            if (currentRef.current) {
+              player.current.loadVideoById(currentRef.current.id);
+            }
+          },
+          onStateChange: (e: any) => {
+            setPlaying(e.data === 1);
+            if (e.data === 0) nextRef.current();
+          },
+          onError: (e: any) => {
+            console.warn("YouTube Player error:", e.data);
+            nextRef.current();
+          },
         },
       });
     };
@@ -519,6 +542,12 @@ export default function App() {
       setIdx(i);
       setExpanded(true);
 
+      // Iniciar reproducción sincrónica en el evento de click (política de autoplay)
+      if (player.current?.loadVideoById) {
+        player.current.loadVideoById(t.id);
+        player.current.playVideo?.();
+      }
+
       // Guardar en recientes la canción reproducida
       addRecent({
         id: "track_" + t.id,
@@ -540,7 +569,14 @@ export default function App() {
       if (item.track) {
         play([item.track], 0);
       } else {
-        search(item.query || item.title);
+        setLoading(true);
+        videoSearch(item.query || item.title).then((tracks) => {
+          if (tracks.length > 0) {
+            play(tracks, 0);
+          } else {
+            search(item.query || item.title);
+          }
+        }).finally(() => setLoading(false));
       }
     } else if (item.type === "album") {
       if (item.album) {

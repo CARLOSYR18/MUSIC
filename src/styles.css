@@ -943,12 +943,19 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
 
 .hidden-player {
   position: fixed;
-  top: -9999px;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
+  bottom: 0;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  opacity: 0.001;
   pointer-events: none;
+  z-index: -100;
+  overflow: hidden;
+}
+.hidden-player iframe,
+.hidden-player #yt {
+  width: 100% !important;
+  height: 100% !important;
 }
 
 /* Ocultar elementos móviles por defecto en desktop */
