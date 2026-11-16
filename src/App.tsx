@@ -1198,10 +1198,41 @@ export default function App() {
         )}
       </main>
 
-      {/* Pantalla completa de reproducción estilo Spotify (Desktop & Móvil) */}
+      {/* Pantalla completa de reproducción para PC (Desktop - Diseño Original) */}
       {expanded && current && (
         <section
-          className="now-playing-screen"
+          className="now-playing-screen desktop-now-playing desktop-only"
+          style={{
+            ["--bg-top" as any]: bgTop,
+            ["--bg-bottom" as any]: bgBottom,
+          }}
+        >
+          <div className="now-playing-top">
+            <div className="context-title">{current.title}</div>
+            <div className="top-actions">
+              <button className="top-action-btn" title="Disco"><SvgDisc /></button>
+              <button className="top-action-btn" title="Video"><SvgVideo /></button>
+              <button className="top-action-btn" title="Artista"><SvgUser /></button>
+              <button className="top-action-btn" title="Letra"><SvgMic /></button>
+              <button className="top-action-btn" title="Más opciones"><SvgMore /></button>
+              <button className="minimize-btn" onClick={() => setExpanded(false)} title="Minimizar">
+                <SvgCompress />
+              </button>
+            </div>
+          </div>
+
+          <div className="now-playing-center">
+            <div className="now-playing-artwork">
+              <img src={current.thumb} alt={current.title} referrerPolicy="no-referrer" />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Pantalla completa de reproducción para Móvil (Diseño Mobile) */}
+      {expanded && current && (
+        <section
+          className="now-playing-screen mobile-now-playing mobile-only"
           style={{
             ["--bg-top" as any]: bgTop,
             ["--bg-bottom" as any]: bgBottom,
