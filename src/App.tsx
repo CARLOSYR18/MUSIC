@@ -540,7 +540,15 @@ export default function App() {
       const t = list[i];
       setQueue(list);
       setIdx(i);
-      setExpanded(true);
+
+      // En PC / Desktop NO expandir a pantalla completa automáticamente:
+      // la música suena directamente en la barra inferior de Spotify mientras se navega.
+      // En móvil (<= 768px) sí se abre a pantalla completa.
+      if (typeof window !== "undefined" && window.innerWidth <= 768) {
+        setExpanded(true);
+      } else {
+        setExpanded(false);
+      }
 
       // Iniciar reproducción sincrónica en el evento de click (política de autoplay)
       if (player.current?.loadVideoById) {
@@ -1081,10 +1089,10 @@ export default function App() {
         )}
       </main>
 
-      {/* Pantalla completa de reproducción idéntica a Spotify Mobile */}
-      {expanded && current && (
+      {/* Pantalla completa de reproducción idéntica a Spotify Mobile (Solo móvil) */}
+      {typeof window !== "undefined" && window.innerWidth <= 768 && expanded && current && (
         <section
-          className="now-playing-screen"
+          className="now-playing-screen mobile-only"
           style={{
             ["--bg-top" as any]: bgTop,
             ["--bg-bottom" as any]: bgBottom,
@@ -1326,13 +1334,7 @@ export default function App() {
 
       {/* Barra de reproducción inferior Desktop estilo Spotify */}
       <footer className="bar desktop-bar">
-        <div
-          className={"now" + (current ? " clickable" : "")}
-          onClick={() => current && setExpanded(!expanded)}
-          title={current ? (expanded ? "Minimizar vista" : "Pantalla completa") : undefined}
-          role={current ? "button" : undefined}
-          tabIndex={current ? 0 : undefined}
-        >
+        <div className="now">
           {current ? (
             <>
               <img src={current.thumb} alt="" referrerPolicy="no-referrer" />
@@ -1423,15 +1425,6 @@ export default function App() {
             onChange={(e) => setVol(+e.target.value)}
             aria-label="Volumen"
           />
-          <button
-            className="ctrl-btn"
-            onClick={() => setExpanded(!expanded)}
-            disabled={!current}
-            title={expanded ? "Minimizar" : "Pantalla completa"}
-            aria-label="Pantalla completa"
-          >
-            {expanded ? <SvgCompress /> : <SvgExpand />}
-          </button>
         </div>
       </footer>
 

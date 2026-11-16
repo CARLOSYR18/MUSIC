@@ -843,104 +843,6 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
   max-width: 90px;
 }
 
-/* --- VISTA COMPLETA ESTILO SPOTIFY NOW PLAYING --- */
-.now-playing-screen {
-  position: fixed;
-  inset: 0 0 var(--bar-h) 0;
-  z-index: 150;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: linear-gradient(180deg, var(--bg-top, #78290f) 0%, var(--bg-bottom, #401407) 100%);
-  animation: fadeIn 0.2s ease-out;
-  overflow: hidden;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.99); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.now-playing-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px 32px 0;
-  z-index: 2;
-}
-
-.context-title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 60%;
-}
-
-.top-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.top-action-btn {
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  border-radius: 50%;
-  transition: color 0.15s, transform 0.15s;
-}
-.top-action-btn:hover {
-  color: #fff;
-  transform: scale(1.1);
-}
-
-.minimize-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.35);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s, transform 0.15s;
-}
-.minimize-btn:hover {
-  background: rgba(0, 0, 0, 0.65);
-  transform: scale(1.08);
-}
-
-.now-playing-center {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 2;
-}
-
-.now-playing-artwork {
-  width: min(430px, 50vh, 75vw);
-  aspect-ratio: 1;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
-  background: #181818;
-}
-
-.now-playing-artwork img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
 .hidden-player {
   position: fixed;
   bottom: 0;
@@ -965,8 +867,10 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
 .mobile-explore-section,
 .mobile-library-section,
 .listen-now-list,
-.section-head-stacked {
-  display: none;
+.section-head-stacked,
+.now-playing-screen,
+.mobile-only {
+  display: none !important;
 }
 
 /* ==========================================================================
