@@ -809,7 +809,7 @@ export default function App() {
             <div className="mobile-top-bar">
               <button
                 className="user-avatar-btn mobile-avatar"
-                onClick={() => { setShowMenu(!showMenu); setShowNotifs(false); }}
+                onClick={() => setShowProfileModal(true)}
                 title={`Cuenta de ${userName}`}
                 aria-label="Cuenta"
               >
@@ -847,6 +847,18 @@ export default function App() {
 
           {mobileTab === "search" && (
             <div className="mobile-search-bar-wrap">
+              <div className="mobile-search-top-row">
+                <button
+                  className="user-avatar-btn mobile-avatar"
+                  onClick={() => setShowProfileModal(true)}
+                  title={`Cuenta de ${userName}`}
+                  aria-label="Cuenta"
+                >
+                  <span className="user-avatar-circle">{userInitial}</span>
+                </button>
+                <h1 className="mobile-search-title">Buscar</h1>
+              </div>
+
               <form className="mobile-search-box" onSubmit={(e) => { e.preventDefault(); search(q); }}>
                 <SvgSearch />
                 <input
@@ -854,12 +866,15 @@ export default function App() {
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="¿Qué quieres escuchar?"
                   aria-label="Buscar"
+                  autoCapitalize="none"
+                  autoCorrect="off"
                 />
                 {q && (
                   <button
                     type="button"
                     className="mobile-clear-btn"
                     onClick={() => { setQ(""); setResults([]); setArtist(null); }}
+                    aria-label="Borrar búsqueda"
                   >
                     ✕
                   </button>
@@ -872,7 +887,7 @@ export default function App() {
             <div className="mobile-lib-header">
               <button
                 className="user-avatar-btn mobile-avatar"
-                onClick={() => { setShowMenu(!showMenu); setShowNotifs(false); }}
+                onClick={() => setShowProfileModal(true)}
                 title={`Cuenta de ${userName}`}
                 aria-label="Cuenta"
               >

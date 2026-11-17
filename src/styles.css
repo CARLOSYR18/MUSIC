@@ -982,16 +982,18 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
 }
 
 /* Ocultar elementos móviles por defecto en desktop */
-.mobile-header,
-.mobile-mini-player,
-.mobile-nav-bar,
-.mobile-explore-section,
-.mobile-library-section,
-.listen-now-list,
-.section-head-stacked,
-.mobile-now-playing,
-.mobile-only {
-  display: none !important;
+@media (min-width: 769px) {
+  .mobile-header,
+  .mobile-mini-player,
+  .mobile-nav-bar,
+  .mobile-explore-section,
+  .mobile-library-section,
+  .listen-now-list,
+  .section-head-stacked,
+  .mobile-now-playing,
+  .mobile-only {
+    display: none !important;
+  }
 }
 
 /* ==========================================================================
@@ -1024,11 +1026,11 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
 
   /* Header Superior Mobile */
   .mobile-header {
-    display: block;
+    display: block !important;
     margin-bottom: 20px;
   }
   .mobile-top-bar {
-    display: flex;
+    display: flex !important;
     align-items: center;
     gap: 12px;
     width: 100%;
@@ -1038,6 +1040,7 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
     height: 36px;
     padding: 2px;
     flex-shrink: 0;
+    cursor: pointer;
   }
   .mobile-avatar .user-avatar-circle {
     width: 32px;
@@ -1067,6 +1070,8 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
     background: rgba(255, 255, 255, 0.08);
     color: #fff;
     transition: background 0.15s, color 0.15s;
+    border: none;
+    cursor: pointer;
   }
   .mobile-filter-pills .filter-pill.active {
     background: #1ed760;
@@ -1074,51 +1079,95 @@ h2 { font-size: 22px; margin: 0 0 14px; letter-spacing: -0.02em; font-weight: 70
     font-weight: 700;
   }
 
-  /* Buscador Mobile */
+  /* Buscador Mobile - Idéntico a Spotify */
   .mobile-search-bar-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px;
     width: 100%;
   }
-  .mobile-search-box {
+  .mobile-search-top-row {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: #242424;
-    border-radius: 8px;
-    padding: 0 14px;
-    height: 46px;
-    width: 100%;
+  }
+  .mobile-search-title {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
     color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .mobile-search-box {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px;
+    background: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 0 14px !important;
+    height: 48px !important;
+    width: 100% !important;
+    color: #121212 !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box;
+  }
+  .mobile-search-box svg {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    fill: #121212 !important;
+    color: #121212 !important;
   }
   .mobile-search-box input {
-    background: none;
-    border: none;
-    outline: none;
-    color: #fff;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: #121212 !important;
     font: inherit;
-    font-size: 14px;
-    width: 100%;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    width: 100% !important;
+    padding: 0;
   }
   .mobile-search-box input::placeholder {
-    color: #b3b3b3;
+    color: #555555 !important;
+    font-weight: 500;
   }
   .mobile-clear-btn {
-    color: #b3b3b3;
-    font-size: 16px;
-    padding: 4px;
+    background: none;
+    border: none;
+    color: #555555;
+    font-size: 18px;
+    padding: 4px 6px;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* Header de Biblioteca en Mobile */
   .mobile-lib-header {
-    display: flex;
+    display: flex !important;
     align-items: center;
     gap: 14px;
     margin-bottom: 12px;
   }
   .mobile-lib-header h2 {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
     margin: 0;
     flex: 1;
+    color: #fff;
+  }
+  .lib-add-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
   }
 
   /* Cuadrícula de 8 accesos rápidos en Mobile (2 columnas x 4 filas) */
